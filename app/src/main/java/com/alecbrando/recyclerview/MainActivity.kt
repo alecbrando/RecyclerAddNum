@@ -1,9 +1,12 @@
 package com.alecbrando.recyclerview
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alecbrando.recyclerview.databinding.ActivityMainBinding
 
@@ -11,6 +14,8 @@ class MainActivity : AppCompatActivity(), Adapter.clickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
+
+    private var layoutstyle = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,29 @@ class MainActivity : AppCompatActivity(), Adapter.clickListener {
             }
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.action_layout_style -> {
+                if(layoutstyle == 0){
+                    item.title = "Grid"
+                    binding.recycler.layoutManager = LinearLayoutManager(this)
+                    layoutstyle = 1
+                } else {
+                    item.title = "Linear"
+                    binding.recycler.layoutManager = GridLayoutManager(this, 2)
+                    layoutstyle = 0
+                }
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun itemClicked(num: Int) {
