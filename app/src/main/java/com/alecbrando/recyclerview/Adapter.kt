@@ -2,13 +2,24 @@ package com.alecbrando.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.alecbrando.recyclerview.databinding.ViewHolderBinding
 
 
-class Adapter(private var list: MutableList<Int>) : RecyclerView.Adapter<Adapter.ViewHolder>(){
+class Adapter(private val listener: clickListener) : ListAdapter<Int,Adapter.ViewHolder>(DiffCallBack()){
 
-    class ViewHolder(private val binding: ViewHolderBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ViewHolderBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    val position = adapterPosition
+                    listener.itemClicked(getItem(position))
+                }
+            }
+        }
 
         fun binding(num : Int){
             binding.apply {
@@ -24,11 +35,18 @@ class Adapter(private var list: MutableList<Int>) : RecyclerView.Adapter<Adapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding(list[position])
+        holder.binding(getItem(position))
+    }
+
+    interface clickListener {
+        fun itemClicked(num: Int)
     }
 
 
+    class DiffCallBack : DiffUtil.ItemCallback<Int>() {
+        override fun areItemsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
 
-    override fun getItemCount() = list.size
+        override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
+        }
 
-}
+    }
